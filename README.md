@@ -2,7 +2,7 @@
 
 A beautiful, modern, and secure desktop email client built with Electron and powered by the **Resend API**.
 
-![Resend Mailer](renderer/icon.png)
+![Resend Mailer GUI Screenshot](renderer/screenshot.png)
 
 ## Features
 
