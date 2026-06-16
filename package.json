@@ -1,0 +1,31 @@
+{
+  "name": "resend-mailer",
+  "version": "1.0.0",
+  "description": "Desktop email client powered by Resend API",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "resend": "^4.1.0"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.resendmailer.app",
+    "productName": "Resend Mailer",
+    "win": {
+      "target": "nsis",
+      "icon": "renderer/icon.png"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*"
+    ]
+  }
+}

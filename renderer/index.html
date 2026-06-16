@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resend Mailer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ═══ CUSTOM TITLEBAR ═══ -->
+    <header class="titlebar" id="titlebar">
+        <div class="titlebar__drag">
+            <span class="titlebar__label">RESEND MAILER</span>
+        </div>
+        <div class="titlebar__controls">
+            <button class="titlebar__btn" id="btn-minimize" aria-label="Minimize">
+                <svg width="12" height="12" viewBox="0 0 12 12">
+                    <rect y="5" width="12" height="2" fill="currentColor" />
+                </svg>
+            </button>
+            <button class="titlebar__btn" id="btn-maximize" aria-label="Maximize">
+                <svg width="12" height="12" viewBox="0 0 12 12">
+                    <rect x="1" y="1" width="10" height="10" stroke="currentColor" stroke-width="1.5" fill="none" />
+                </svg>
+            </button>
+            <button class="titlebar__btn titlebar__btn--close" id="btn-close" aria-label="Close">
+                <svg width="12" height="12" viewBox="0 0 12 12">
+                    <path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- ═══ NAVIGATION ═══ -->
+    <nav class="nav">
+        <div class="nav__inner">
+            <div class="nav__logo">
+                <span class="nav__logo-text">RESEND<br>MAILER</span>
+            </div>
+            <div class="nav__tabs">
+                <button class="nav__tab active" data-tab="send">SEND</button>
+                <button class="nav__tab" data-tab="history">HISTORY</button>
+                <button class="nav__tab" data-tab="receive">INBOX</button>
+                <button class="nav__tab" data-tab="settings">⚙</button>
+            </div>
+            <div class="nav__right">
+                <span class="nav__status" id="api-status">
+                    <span class="nav__status-dot" id="status-dot"></span>
+                    <span class="nav__status-text" id="status-text">CHECKING…</span>
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ═══ TAB: SEND ═══ -->
+    <main class="tab-panel active" id="panel-send">
+        <section class="section">
+            <div class="section__grid">
+                <div class="section__sidebar">
+                    <div class="sidebar-label">
+                        <div class="sidebar-label__icon"></div>
+                        <span class="sidebar-label__text">COMPOSE</span>
+                    </div>
+                    <div class="sidebar-meta">
+                        <span class="sidebar-meta__key">FROM</span>
+                        <span class="sidebar-meta__value" id="sender-display">—</span>
+                    </div>
+                    <div class="sidebar-meta">
+                        <span class="sidebar-meta__key">MODE</span>
+                        <button class="sidebar-meta__toggle" id="mode-toggle">PLAIN TEXT</button>
+                    </div>
+                    <div class="sidebar-meta">
+                        <span class="sidebar-meta__key">FIELDS</span>
+                        <button class="sidebar-meta__toggle" id="cc-toggle">+ CC / BCC</button>
+                    </div>
+                    <div class="sidebar-meta sidebar-shortcut">
+                        <span class="sidebar-meta__key">SEND</span>
+                        <span class="sidebar-meta__value">CTRL + ENTER</span>
+                    </div>
+                </div>
+                <div class="section__content">
+                    <h1 class="hero-headline">SEND<br><span class="accent">EMAIL</span></h1>
+                    <form class="compose-form" id="compose-form" autocomplete="off">
+                        <div class="form-row">
+                            <label class="form-label" for="field-to">TO</label>
+                            <input class="form-input" id="field-to" type="text" placeholder="recipient@example.com"
+                                required>
+                        </div>
+                        <div class="form-row form-row--hidden" id="cc-row">
+                            <label class="form-label" for="field-cc">CC</label>
+                            <input class="form-input" id="field-cc" type="text" placeholder="cc@example.com">
+                        </div>
+                        <div class="form-row form-row--hidden" id="bcc-row">
+                            <label class="form-label" for="field-bcc">BCC</label>
+                            <input class="form-input" id="field-bcc" type="text" placeholder="bcc@example.com">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label" for="field-subject">SUBJECT</label>
+                            <input class="form-input" id="field-subject" type="text" placeholder="Email subject"
+                                required>
+                        </div>
+                        <div class="form-row form-row--body">
+                            <label class="form-label form-label--top" for="field-body">BODY</label>
+                            <textarea class="form-textarea" id="field-body" placeholder="Write your message here…"
+                                rows="12" required></textarea>
+                        </div>
+                        <div class="form-row" id="attach-row">
+                            <label class="form-label">FILES</label>
+                            <div
+                                style="flex:1; border-left:1px solid var(--border); padding:12px 16px; display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+                                <button type="button" class="poster-btn poster-btn--ghost" id="attach-btn"
+                                    style="padding:8px 16px; min-width:auto; font-size:11px;">+ ATTACH FILE</button>
+                                <div id="attach-list" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="poster-btn poster-btn--primary" id="send-btn">
+                                <span id="send-btn-text">SEND EMAIL</span>
+                                <span id="send-btn-loader" style="display:none;">SENDING…</span>
+                            </button>
+                            <button type="reset" class="poster-btn poster-btn--ghost" id="clear-btn">CLEAR</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ═══ TAB: HISTORY ═══ -->
+    <main class="tab-panel" id="panel-history">
+        <section class="section">
+            <div class="section__grid">
+                <div class="section__sidebar">
+                    <div class="sidebar-label">
+                        <div class="sidebar-label__icon"></div>
+                        <span class="sidebar-label__text">SENT</span>
+                    </div>
+                    <div class="sidebar-meta">
+                        <span class="sidebar-meta__key">COUNT</span>
+                        <span class="sidebar-meta__value" id="sent-count">0</span>
+                    </div>
+                </div>
+                <div class="section__content">
+                    <!-- List view -->
+                    <div id="history-list-view">
+                        <h2 class="section-headline">SENT<br><span class="accent">HISTORY</span></h2>
+                        <div class="history-list" id="history-list">
+                            <div class="empty-state" id="history-empty">
+                                <span class="empty-state__index">000</span>
+                                <span class="empty-state__text">NO EMAILS SENT YET</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Detail view (hidden by default) -->
+                    <div id="history-detail-view" class="detail-view" style="display:none;">
+                        <button class="back-btn" id="history-back-btn">
+                            <span class="back-btn__arrow">←</span>
+                            <span class="back-btn__text">BACK TO LIST</span>
+                        </button>
+                        <div class="detail-header">
+                            <h2 class="detail-subject" id="detail-subject">—</h2>
+                        </div>
+                        <div class="detail-meta-grid">
+                            <div class="detail-meta-row">
+                                <span class="detail-meta-key">TO</span>
+                                <span class="detail-meta-val" id="detail-to">—</span>
+                            </div>
+                            <div class="detail-meta-row" id="detail-cc-row" style="display:none;">
+                                <span class="detail-meta-key">CC</span>
+                                <span class="detail-meta-val" id="detail-cc">—</span>
+                            </div>
+                            <div class="detail-meta-row">
+                                <span class="detail-meta-key">DATE</span>
+                                <span class="detail-meta-val" id="detail-date">—</span>
+                            </div>
+                            <div class="detail-meta-row">
+                                <span class="detail-meta-key">ID</span>
+                                <span class="detail-meta-val" id="detail-id">—</span>
+                            </div>
+                        </div>
+                        <div class="detail-body" id="detail-body">—</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+    <!-- ═══ TAB: INBOX ═══ -->
+    <main class="tab-panel" id="panel-receive">
+        <section class="section">
+            <div class="section__grid">
+                <div class="section__sidebar">
+                    <div class="sidebar-label">
+                        <div class="sidebar-label__icon"></div>
+                        <span class="sidebar-label__text">INBOX</span>
+                    </div>
+                    <div class="sidebar-meta">
+                        <span class="sidebar-meta__key">EMAILS</span>
+                        <span class="sidebar-meta__value" id="inbox-count">—</span>
+                    </div>
+                    <div class="sidebar-meta">
+                        <button class="sidebar-meta__toggle" id="inbox-refresh-btn">REFRESH</button>
+                    </div>
+                </div>
+                <div class="section__content">
+                    <!-- List view -->
+                    <div id="inbox-list-view">
+                        <h2 class="section-headline"><span class="accent">INBOX</span></h2>
+                        <div class="history-list" id="inbox-list">
+                            <div class="empty-state" id="inbox-empty">
+                                <span class="empty-state__index">000</span>
+                                <span class="empty-state__text">NO EMAILS RECEIVED</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Detail view -->
+                    <div id="inbox-detail-view" class="detail-view" style="display:none;">
+                        <button class="back-btn" id="inbox-back-btn">
+                            <span class="back-btn__arrow">←</span>
+                            <span class="back-btn__text">BACK TO INBOX</span>
+                        </button>
+                        <div class="detail-header">
+                            <h2 class="detail-subject" id="inbox-detail-subject">—</h2>
+                        </div>
+                        <div class="detail-meta-grid">
+                            <div class="detail-meta-row">
+                                <span class="detail-meta-key">FROM</span>
+                                <span class="detail-meta-val" id="inbox-detail-from">—</span>
+                            </div>
+                            <div class="detail-meta-row">
+                                <span class="detail-meta-key">TO</span>
+                                <span class="detail-meta-val" id="inbox-detail-to">—</span>
+                            </div>
+                            <div class="detail-meta-row">
+                                <span class="detail-meta-key">DATE</span>
+                                <span class="detail-meta-val" id="inbox-detail-date">—</span>
+                            </div>
+                        </div>
+                        <div class="detail-body" id="inbox-detail-body">—</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ═══ SETTINGS PANEL ═══ -->
+    <main class="tab-panel" id="panel-settings">
+        <section class="section">
+            <div class="section__grid">
+                <div class="section__sidebar">
+                    <div class="sidebar-label">
+                        <div class="sidebar-label__icon"></div>
+                        <span class="sidebar-label__text">SETTINGS</span>
+                    </div>
+                    <div class="sidebar-meta">
+                        <span class="sidebar-meta__key">CONFIG</span>
+                        <span class="sidebar-meta__value">.env</span>
+                    </div>
+                </div>
+                <div class="section__content">
+                    <h2 class="section-headline">CONFIGURATION</h2>
+                    <form id="settings-form" autocomplete="off">
+                        <div class="form-row">
+                            <label class="form-label" for="env-api-key">API KEY</label>
+                            <input class="form-input" type="password" id="env-api-key" placeholder="re_xxxxx">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label" for="env-sender-email">FROM</label>
+                            <input class="form-input" type="email" id="env-sender-email" placeholder="you@domain.com">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label" for="env-sender-name">NAME</label>
+                            <input class="form-input" type="text" id="env-sender-name" placeholder="Your Name">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label" for="env-reply-to">REPLY TO</label>
+                            <input class="form-input" type="email" id="env-reply-to" placeholder="reply@domain.com">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label" for="env-notify">NOTIFY</label>
+                            <input class="form-input" type="email" id="env-notify" placeholder="your@gmail.com">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="poster-btn poster-btn--primary" id="save-env-btn">SAVE
+                                SETTINGS</button>
+                            <button type="button" class="poster-btn poster-btn--ghost" id="restart-btn">RESTART
+                                APP</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ═══ TOAST ═══ -->
+    <div class="toast" id="toast">
+        <div class="toast__inner">
+            <span class="toast__index" id="toast-index">—</span>
+            <span class="toast__message" id="toast-message"></span>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
